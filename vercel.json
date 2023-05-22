@@ -1,5 +1,4 @@
 {
-    "vesion": 1,
     "build": [
         {
             "src": "./src/index.js",

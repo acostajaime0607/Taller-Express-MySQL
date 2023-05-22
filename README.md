@@ -8,7 +8,7 @@ En consiguiente veremos los pasos para generar un nuevo token :
 
 Para crear un usuario debemos usar la ruta 
 
-- POST: http://localhost:4000/api/v1/registrar_usuario
+- POST: https://taller-express-my-sql.vercel.app/api/v1/registrar_usuario
 
 Y el objecto :
 
@@ -23,7 +23,7 @@ Y el objecto :
 
 para iniciar sesion en la app utilizaremos la ruta 
 
-- POST: http://localhost:4000/api/v1/login
+- POST: https://taller-express-my-sql.vercel.app/api/v1/login
 
 Y el objecto :
 
@@ -70,12 +70,12 @@ VARIABLES DE ENTORNO :
 SECRET_KEY_JWT=PRIVATE_KEY_JWT
 
 
-DOMINIO : taller-express-myqdl-production.up.railway.app
+DOMINIO : https://taller-express-my-sql.vercel.app
 
 Para ejecutar las pruebas de las rutas es nesesario añadir el dominio y la ruta a consultar,
 como lo podremos ver en el siguiente ejemplo:
 
-https://taller-express-myqdl-production.up.railway.app/api/v1/rooms
+https://taller-express-my-sql.vercel.app/api/v1/rooms
 
 objeto de ejemplo
 
@@ -104,14 +104,14 @@ DELETE : http://localhost:4000/api/v1/bookings/2 : Eliminar uan reserva
 
 Rutas de habitaciones en produccion :
 
-GET : https://taller-express-myqdl-production.up.railway.app/api/v1/rooms : Mostrar todas las habitaciones
+GET : https://taller-express-my-sql.vercel.app/api/v1/rooms : Mostrar todas las habitaciones
 
-GET : https://taller-express-myqdl-production.up.railway.app/api/v1/rooms/1 : Mostrar una habitacion por su codigo
+GET : https://taller-express-my-sql.vercel.app/api/v1/rooms/1 : Mostrar una habitacion por su codigo
 
 Rutas de reservas en produccion :
 
-POST : https://taller-express-myqdl-production.up.railway.app/api/v1/bookings : Registrar una reserva
+POST : https://taller-express-my-sql.vercel.app/api/v1/bookings : Registrar una reserva
 
-PATCH : https://taller-express-myqdl-production.up.railway.app/api/v1/bookings/2 : Actualizar una reservacion por su codigo
+PATCH : https://taller-express-my-sql.vercel.app/api/v1/bookings/2 : Actualizar una reservacion por su codigo
 
-DELETE : https://taller-express-myqdl-production.up.railway.app/api/v1/bookings/2 : Eliminar uan reserva
+DELETE : https://taller-express-my-sql.vercel.app/api/v1/bookings/2 : Eliminar uan reserva

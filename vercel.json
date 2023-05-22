@@ -1,0 +1,15 @@
+{
+    "vesion": 1,
+    "build": [
+        {
+            "src": "./src/index.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "router": [
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
+    ]
+}

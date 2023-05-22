@@ -6,11 +6,12 @@ import {
   formatResponse,
 } from "../helper/errorFormatter.js";
 import connection from "../db.js";
+import checkToken from "../helper/checkToken.js";
 
 const roomRouter = express.Router();
 
 // VER TODAS LAS HABITACIONES
-roomRouter.get("/rooms", async (req, res) => {
+roomRouter.get("/rooms", checkToken, async (req, res) => {
   const resultErrors = validationResult(req).formatWith(errorFormatter);
   if (!resultErrors.isEmpty()) {
     const errorResponse = formatErrorValidator(resultErrors);
@@ -42,7 +43,7 @@ roomRouter.get("/rooms", async (req, res) => {
 });
 
 // CONSULTAR HABITACION POR CODIGO
-roomRouter.get("/rooms/:codigo", async (req, res) => {
+roomRouter.get("/rooms/:codigo", checkToken, async (req, res) => {
   const resultErrors = validationResult(req).formatWith(errorFormatter);
   if (!resultErrors.isEmpty()) {
     const errorResponse = formatErrorValidator(resultErrors);

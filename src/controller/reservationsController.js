@@ -7,6 +7,7 @@ import {
   formatErrorValidator,
   formatResponse,
 } from "../helper/errorFormatter.js";
+import checkToken from "../helper/checkToken.js";
 
 const reservationsRouter = express.Router();
 
@@ -54,6 +55,7 @@ reservationsRouter.post(
         "La fecha de salida debe ser formato fecha, Eje: YYYY/MM/DD."
       ),
   ],
+  checkToken,
   async (req, res) => {
     const resultErrors = validationResult(req).formatWith(errorFormatter);
     if (!resultErrors.isEmpty()) {
@@ -178,6 +180,7 @@ reservationsRouter.patch(
         "La fecha de salida debe ser formato fecha, Eje: YYYY/MM/DD."
       ),
   ],
+  checkToken,
   async (req, res) => {
     const resultErrors = validationResult(req).formatWith(errorFormatter);
     if (!resultErrors.isEmpty()) {
@@ -276,7 +279,7 @@ reservationsRouter.patch(
 );
 
 // ALIMINAR LA RESERVA
-reservationsRouter.delete("/bookings/:codigo", async (req, res) => {
+reservationsRouter.delete("/bookings/:codigo", checkToken, async (req, res) => {
   const resultErrors = validationResult(req).formatWith(errorFormatter);
   if (!resultErrors.isEmpty()) {
     const errorResponse = formatErrorValidator(resultErrors);

@@ -11,6 +11,7 @@ import connection from "../db.js";
 import dayjs from "dayjs";
 import es from "dayjs/locale/es.js";
 import crearTokenUsuario from "../helper/token.js";
+import checkToken from "../helper/checkToken.js";
 
 const usuarioRouter = express.Router();
 
@@ -136,7 +137,7 @@ usuarioRouter.post(
           );
       }
 
-      const { contraseña, nombres, apellido, estado } = existUsers[0];
+      const { contraseña, nombres, apellido, estado, id } = existUsers[0];
 
       const isPassword = await bcrypt.compareSync(password, contraseña);
 
@@ -151,6 +152,7 @@ usuarioRouter.post(
         nombres,
         apellido,
         estado,
+        id,
       });
 
       newConnection.release();
@@ -158,7 +160,7 @@ usuarioRouter.post(
       return res.status(201).json(
         formatResponse(
           {
-            usuario: { nombres, apellido, estado },
+            usuario: { nombres, apellido, estado, id },
             tokenInfo: {
               token: infoToken.token,
               timeBeforeExpiredAt: infoToken.timeBeforeExpiredAt,
@@ -175,5 +177,51 @@ usuarioRouter.post(
     }
   }
 );
+
+usuarioRouter.get("/relogin", checkToken, async (req, res) => {
+  const resultErrors = validationResult(req).formatWith(errorFormatter);
+  if (!resultErrors.isEmpty()) {
+    const errorResponse = formatErrorValidator(resultErrors);
+    return res.status(422).json(formatResponse({}, errorResponse));
+  }
+
+  const newConnection = await connection.getConnection();
+
+  try {
+    const user = req.user;
+
+    const [existUsers] = await newConnection.query(
+      `SELECT * FROM usuario_auth uh
+          INNER JOIN usuarios u
+          ON uh.fk_usuarios_id = u.id
+       WHERE u.id= ?`,
+      [user.id]
+    );
+
+    const { nombres, apellido, estado } = existUsers[0];
+
+    const infoToken = crearTokenUsuario(user);
+
+    newConnection.release();
+
+    return res.status(201).json(
+      formatResponse(
+        {
+          usuario: { nombres, apellido, estado },
+          tokenInfo: {
+            token: infoToken.token,
+            timeBeforeExpiredAt: infoToken.timeBeforeExpiredAt,
+          },
+        },
+        ""
+      )
+    );
+  } catch (error) {
+    console.log(error);
+    newConnection.release();
+    const errorFormated = formatErrorResponse(error);
+    return res.status(500).json(errorFormated);
+  }
+});
 
 export default usuarioRouter;

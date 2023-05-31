@@ -11,6 +11,37 @@ import checkToken from "../helper/checkToken.js";
 
 const reservationsRouter = express.Router();
 
+reservationsRouter.get("/bookings", checkToken, async (req, res) => {
+  const resultErrors = validationResult(req).formatWith(errorFormatter);
+  if (!resultErrors.isEmpty()) {
+    const errorResponse = formatErrorValidator(resultErrors);
+    return res.status(422).json(formatResponse({}, errorResponse));
+  }
+
+  const newConnection = await connection.getConnection();
+
+  try {
+    const [rows] = await newConnection.query("SELECT * FROM reservas");
+
+    newConnection.release();
+
+    return res.status(201).json(
+      formatResponse(
+        {
+          reserve: rows,
+        },
+        ""
+      )
+    );
+  } catch (error) {
+    console.log(error);
+    newConnection.rollback();
+    newConnection.release();
+    const errorFormated = formatErrorResponse(error);
+    return res.status(500).json(errorFormated);
+  }
+});
+
 // CREAR NUEVA RESERVA
 reservationsRouter.post(
   "/bookings",
@@ -29,31 +60,13 @@ reservationsRouter.post(
       .notEmpty()
       .withMessage("La fecha de reservacion es un campo obligatorio."),
 
-    body("fecha_reservacion")
-      .isDate()
-      .withMessage(
-        "La fecha de reservacion debe ser formato fecha, Eje: YYYY/MM/DD."
-      ),
-
     body("fecha_entrada")
       .notEmpty()
       .withMessage("La fecha de entrada es un campo obligatorio."),
 
-    body("fecha_entrada")
-      .isDate()
-      .withMessage(
-        "La fecha de entrada debe ser formato fecha, Eje: YYYY/MM/DD."
-      ),
-
     body("fecha_salida")
       .notEmpty()
       .withMessage("La fecha de salida es un campo obligatorio."),
-
-    body("fecha_salida")
-      .isDate()
-      .withMessage(
-        "La fecha de salida debe ser formato fecha, Eje: YYYY/MM/DD."
-      ),
   ],
   checkToken,
   async (req, res) => {
@@ -93,7 +106,7 @@ reservationsRouter.post(
           );
       }
 
-      const newReserva = await newConnection.query(
+      const [newReserva] = await newConnection.query(
         `INSERT INTO reservas(codigo_habitacion, nombre_cliente, telefono_cliente, fecha_reservacion, fecha_entrada, fecha_salida)
         VALUES(?, ?, ?, ?, ?, ?)
         `,
@@ -121,7 +134,7 @@ reservationsRouter.post(
         formatResponse(
           {
             message: `Reservacion registrada con exito`,
-            habitaciones: rows,
+            reserve: rows[0],
           },
           ""
         )
@@ -137,7 +150,7 @@ reservationsRouter.post(
 );
 
 // ACTUALIZAR LA RESERVA
-reservationsRouter.patch(
+reservationsRouter.put(
   "/bookings/:codigo",
   [
     body("codigo_habitacion")
@@ -263,7 +276,7 @@ reservationsRouter.patch(
         formatResponse(
           {
             message: `Reservacion actualizada con exito`,
-            reservacion: data,
+            reservacion: data[0],
           },
           ""
         )
